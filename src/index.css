@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-yellow: #FFC928;
+  --color-offwhite: #FFF9ED;
+  --color-cream: #F5E9C8;
+  --color-dark: #24221D;
+  --color-muted: #8B8578;
+  --color-card: #FFFFFF;
+  --font-display: 'Nunito', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+}
+
+* {
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background-color: #E8DEC8;
+  font-family: 'Outfit', sans-serif;
+  color: #24221D;
+  -webkit-font-smoothing: antialiased;
+}
+
+.squircle {
+  border-radius: 24px;
+}
+
+.squircle-sm {
+  border-radius: 16px;
+}
+
+.squircle-lg {
+  border-radius: 32px;
+}
+
+.squircle-cat {
+  border-radius: 20px;
+}
+
+input[type='text'],
+input[type='number'],
+textarea {
+  outline: none;
+}
+
+.screen-enter {
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

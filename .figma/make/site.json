@@ -1,0 +1,10 @@
+{
+  "description": "Discover food cravings and explore complete restaurant menus in Thiruvananthapuram with personalized recommendations and a vibrant social community.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
