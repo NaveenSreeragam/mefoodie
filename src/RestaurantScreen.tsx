@@ -20,6 +20,9 @@ interface Props {
 
 export default function RestaurantScreen({ restaurants, restaurantId, onBack }: Props) {
   const restaurant = restaurants.find((r) => r.id === restaurantId) ?? restaurants[0];
+  if (!restaurant) {
+    return <div className="p-8 text-center text-[#8B8578]">No restaurants have been imported yet.</div>;
+  }
   const [activeCategory, setActiveCategory] = useState(restaurant.menu[0]?.id ?? "");
   const [saved, setSaved] = useState(false);
 
@@ -30,12 +33,7 @@ export default function RestaurantScreen({ restaurants, restaurantId, onBack }: 
     <div className="pb-28 screen-enter">
       {/* Cover Photo */}
       <div className="relative h-56 bg-[#F5E9C8]">
-        <img
-          src={restaurant.coverImage}
-          alt={restaurant.name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#24221D]/60 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-[#24221D]" />
 
         {/* Back Button */}
         <button
@@ -73,23 +71,6 @@ export default function RestaurantScreen({ restaurants, restaurantId, onBack }: 
           </h1>
           <p className="text-white/80 text-sm font-body mt-0.5">{restaurant.tagline}</p>
         </div>
-      </div>
-
-      {/* Info Row */}
-      <div className="bg-white px-4 py-3.5 flex items-center gap-4 border-b border-[#F5E9C8]">
-        <RatingBadge rating={restaurant.rating} size="md" />
-        <span className="text-[#8B8578] text-xs font-body">{restaurant.reviewCount} reviews</span>
-        <span
-          className={`text-xs font-bold flex items-center gap-1 ${restaurant.isOpen ? "text-green-600" : "text-red-400"}`}
-        >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${restaurant.isOpen ? "bg-green-500" : "bg-red-400"}`}
-          />
-          {restaurant.isOpen ? `Open until ${restaurant.openUntil}` : "Closed"}
-        </span>
-        <span className="text-[#8B8578] text-xs">
-          {restaurant.priceRange} · ₹{restaurant.avgPrice} avg
-        </span>
       </div>
 
       {/* Location + Actions */}

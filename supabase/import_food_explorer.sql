@@ -5,6 +5,11 @@ ALTER TABLE public.restaurants
   ADD COLUMN IF NOT EXISTS location_url TEXT,
   ADD COLUMN IF NOT EXISTS menu_available BOOLEAN NOT NULL DEFAULT FALSE;
 
+ALTER TABLE public.restaurants ALTER COLUMN image DROP NOT NULL;
+
+-- Clear the existing demo restaurants and their related demo records.
+TRUNCATE TABLE public.restaurants CASCADE;
+
 INSERT INTO public.restaurants
   (id, name, cuisine, area, image, phone, location_url, menu_available)
 VALUES
@@ -66,3 +71,5 @@ ON CONFLICT (id) DO UPDATE SET
   location_url = EXCLUDED.location_url,
   menu_available = EXCLUDED.menu_available;
 
+-- The spreadsheet has no images, so do not retain generated placeholder images.
+UPDATE public.restaurants SET image = NULL WHERE id LIKE 'food_explorer_%';

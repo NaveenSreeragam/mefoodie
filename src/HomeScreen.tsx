@@ -219,25 +219,6 @@ export default function HomeScreen({
         </div>
       </div>
 
-      {/* Time-based Recommendations */}
-      <div className="mb-8">
-        <SectionHeader title={timeRec.label} subtitle={timeRec.desc} onSeeAll={onExploreClick} />
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible">
-          {cravingItems.map((item, i) => (
-            <div key={i} className="min-w-[180px] sm:min-w-0">
-              <FoodCard
-                {...item}
-                saved={savedItems[i]}
-                onSave={() => toggleSave(i)}
-                onClick={() =>
-                  onRestaurantClick(restaurants.find((r) => r.name === item.restaurant)?.id ?? "azad")
-                }
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Mobile Explore CTA Prompt */}
       <div className="mb-8 md:hidden">
         <button
@@ -258,16 +239,17 @@ export default function HomeScreen({
       <div className="mb-8">
         <SectionHeader
           title="🔥 Trending near you"
-          subtitle="Most ordered in the last 2 hours"
+          subtitle="Places imported from your food explorer list"
           onSeeAll={onExploreClick}
         />
         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible">
-          {restaurants.slice(0, 4).map((r) => (
+          {restaurants.map((r) => (
             <div key={r.id} className="min-w-[260px] sm:min-w-0">
               <RestaurantCard restaurant={r} onClick={() => onRestaurantClick(r.id)} />
             </div>
           ))}
         </div>
+        {restaurants.length === 0 && <p className="text-sm text-[#8B8578]">Import the Excel SQL file to show restaurants here.</p>}
       </div>
 
       {/* Hidden Gems Section */}

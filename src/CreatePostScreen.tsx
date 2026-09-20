@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronLeftIcon, CameraIcon, StarIcon } from "./icons";
-import { restaurants } from "./data";
+import type { Restaurant } from "./data";
 
 const postTags = [
   { id: "hidden-gem", label: "✦ Hidden Gem", color: "#FFC928", textColor: "#24221D" },
@@ -14,11 +14,12 @@ const postTags = [
 ];
 
 interface Props {
+  restaurants: Restaurant[];
   onBack: () => void;
   onSuccess: () => void;
 }
 
-export default function CreatePostScreen({ onBack, onSuccess }: Props) {
+export default function CreatePostScreen({ restaurants, onBack, onSuccess }: Props) {
   const [restaurant, setRestaurant] = useState("");
   const [foodItem, setFoodItem] = useState("");
   const [price, setPrice] = useState("");

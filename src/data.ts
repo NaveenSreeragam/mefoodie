@@ -31,7 +31,7 @@ export interface Restaurant {
   area: string;
   isOpen: boolean;
   openUntil: string;
-  coverImage: string;
+  coverImage?: string;
   tags: string[];
   isHiddenGem: boolean;
   gemDescription?: string;

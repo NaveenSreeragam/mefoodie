@@ -140,25 +140,14 @@ export function RestaurantCard({
       className="flex-shrink-0 w-64 bg-white rounded-[20px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
       style={{ boxShadow: "0 2px 16px rgba(36,34,29,0.08)" }}
     >
-      <div className="relative h-36 bg-[#F5E9C8]">
-        <img
-          src={restaurant.coverImage}
-          alt={restaurant.name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+      <div className="relative h-36 bg-[#24221D] p-4 flex flex-col justify-between">
         {restaurant.isHiddenGem && (
           <div className="absolute top-2 left-2 bg-[#FFC928] text-[#24221D] text-[10px] font-display font-800 px-2 py-1 rounded-full">
             ✦ HIDDEN GEM ✦
           </div>
         )}
-        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-          <RatingBadge rating={restaurant.rating} />
-          <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${restaurant.isOpen ? "bg-green-500 text-white" : "bg-red-400 text-white"}`}
-          >
-            {restaurant.isOpen ? `Open · ${restaurant.openUntil}` : "Closed"}
-          </span>
+        <div className="flex items-end">
+          <p className="font-display font-800 text-white text-base leading-tight pr-2">{restaurant.name}</p>
         </div>
       </div>
       <div className="p-3">
@@ -170,10 +159,7 @@ export function RestaurantCard({
         </p>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-[#8B8578] text-[11px] flex items-center gap-0.5">
-            <MapPinIcon size={10} /> {restaurant.distance}
-          </span>
-          <span className="text-[#8B8578] text-[11px]">
-            {restaurant.priceRange} · avg ₹{restaurant.avgPrice}
+            <MapPinIcon size={10} /> {restaurant.area}
           </span>
         </div>
         <div className="flex flex-wrap gap-1 mt-2">

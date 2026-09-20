@@ -32,7 +32,7 @@ const toRestaurant = (row: RestaurantRow): Restaurant => ({
   area: row.area,
   isOpen: true,
   openUntil: "Check with restaurant",
-  coverImage: row.image,
+  coverImage: "",
   tags: [...(row.tags ?? []), ...(row.menu_available ? ["Menu available"] : [])],
   isHiddenGem: row.is_hidden_gem ?? false,
   phone: row.phone ?? "",

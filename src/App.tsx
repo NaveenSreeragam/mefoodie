@@ -4,12 +4,10 @@ import { Sidebar, NavTab } from "./Sidebar";
 import { Header } from "./Header";
 import HomeScreen from "./HomeScreen";
 import ExploreScreen from "./ExploreScreen";
-import FeedScreen from "./FeedScreen";
 import ProfileScreen from "./ProfileScreen";
 import RestaurantScreen from "./RestaurantScreen";
 import CreatePostScreen from "./CreatePostScreen";
-import SavedScreen from "./SavedScreen";
-import { restaurants as fallbackRestaurants, type Restaurant } from "./data";
+import { type Restaurant } from "./data";
 import { fetchRestaurants } from "./services/api";
 
 type Screen =
@@ -26,7 +24,7 @@ export default function App() {
   const [prevScreen, setPrevScreen] = useState<Screen>("home");
   const [activeTab, setActiveTab] = useState<NavTab>("home");
   const [restaurantId, setRestaurantId] = useState<string>("azad");
-  const [restaurants, setRestaurants] = useState<Restaurant[]>(fallbackRestaurants);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
     fetchRestaurants()
@@ -86,18 +84,17 @@ export default function App() {
             )}
             {screen === "explore" && <ExploreScreen restaurants={restaurants} onRestaurantClick={openRestaurant} />}
             {screen === "feed" && (
-              <FeedScreen
-                onRestaurantClick={openRestaurant}
-                onCreatePost={() => navigate("create-post")}
-              />
+              <EmptyState title="Discoveries" message="No community posts have been added yet." />
             )}
-            {screen === "saved" && <SavedScreen onRestaurantClick={openRestaurant} />}
+            {screen === "saved" && (
+              <EmptyState title="Saved" message="No restaurants have been saved yet." />
+            )}
             {screen === "profile" && <ProfileScreen />}
             {screen === "restaurant" && (
               <RestaurantScreen restaurants={restaurants} restaurantId={restaurantId} onBack={goBack} />
             )}
             {screen === "create-post" && (
-              <CreatePostScreen onBack={goBack} onSuccess={() => navTo("feed")} />
+              <CreatePostScreen restaurants={restaurants} onBack={goBack} onSuccess={() => navTo("feed")} />
             )}
           </div>
         </main>
@@ -151,6 +148,15 @@ export default function App() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function EmptyState({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="px-4 py-16 text-center">
+      <h1 className="font-display font-900 text-[#24221D] text-2xl">{title}</h1>
+      <p className="text-[#8B8578] text-sm mt-2">{message}</p>
     </div>
   );
 }

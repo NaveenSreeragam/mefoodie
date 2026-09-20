@@ -204,24 +204,6 @@ export default function ExploreScreen({ restaurants, onRestaurantClick }: Props)
 
       {/* Desktop Main Content Layout */}
       <div className="space-y-8">
-        {/* Dishes Section */}
-        {(activeTab === "all" || activeTab === "dishes") && (
-          <div>
-            <h2 className="font-display font-black text-[#24221D] text-lg mb-4">
-              Popular Dishes Nearby
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {foodResults.map((item, idx) => (
-                <FoodCard
-                  key={idx}
-                  {...item}
-                  onClick={() => onRestaurantClick(item.restaurantId)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Restaurants Section */}
         {(activeTab === "all" || activeTab === "restaurants") && (
           <div>
@@ -233,6 +215,7 @@ export default function ExploreScreen({ restaurants, onRestaurantClick }: Props)
                 <RestaurantCard key={r.id} restaurant={r} onClick={() => onRestaurantClick(r.id)} />
               ))}
             </div>
+            {filteredRestaurants.length === 0 && <p className="text-sm text-[#8B8578]">No imported restaurants found.</p>}
           </div>
         )}
       </div>
