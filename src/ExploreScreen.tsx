@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SlidersIcon, XIcon, ChevronRightIcon } from "./icons";
+import { SlidersIcon, XIcon, ChevronRightIcon, SearchIcon, MapPinIcon } from "./icons";
 import { SearchBar, FilterPill, FoodCard, RestaurantCard, RatingBadge } from "./components";
 import { restaurants, foodCategories } from "./data";
 
@@ -104,48 +104,72 @@ interface Props {
 
 export default function ExploreScreen({ onRestaurantClick }: Props) {
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"food" | "restaurants">("food");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"all" | "dishes" | "restaurants">("all");
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
-  const toggleFilter = (f: string) =>
+  const toggleFilter = (f: string) => {
     setActiveFilters((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
+  };
 
-  const filteredFood = foodResults.filter(
-    (f) =>
-      !query ||
-      f.name.toLowerCase().includes(query.toLowerCase()) ||
-      f.restaurant.toLowerCase().includes(query.toLowerCase()),
-  );
-
-  const filteredRestaurants = restaurants.filter(
-    (r) =>
-      !query ||
-      r.name.toLowerCase().includes(query.toLowerCase()) ||
-      r.cuisine.toLowerCase().includes(query.toLowerCase()),
-  );
+  const filteredRestaurants = restaurants.filter((r) => {
+    if (query && !r.name.toLowerCase().includes(query.toLowerCase()) && !r.cuisine.toLowerCase().includes(query.toLowerCase())) {
+      return false;
+    }
+    if (activeFilters.includes("Open now") && !r.isOpen) return false;
+    if (activeFilters.includes("4.5+ Rating") && r.rating < 4.5) return false;
+    if (activeFilters.includes("Under ₹300") && r.avgPrice > 300) return false;
+    return true;
+  });
 
   return (
-    <div className="pb-28 screen-enter">
-      {/* Header */}
-      <div className="px-4 pt-12 pb-4">
-        <h1 className="font-display font-900 text-[#24221D] text-2xl">Explore</h1>
-        <p className="text-[#8B8578] text-sm font-body mt-1">Find food, restaurants, cravings</p>
+    <div className="pb-12 screen-enter px-4 sm:px-6 md:px-8 py-6">
+      {/* Title */}
+      <div className="pt-2 pb-4">
+        <h1 className="font-display font-black text-[#24221D] text-2xl md:text-3xl">
+          Explore Food & Places 🧭
+        </h1>
+        <p className="text-[#8B8578] text-sm font-body mt-1">
+          Search dishes, street spots, and top-rated restaurants near you
+        </p>
       </div>
 
-      {/* Search Bar */}
-      <div className="mb-4">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search chicken shawarma, biriyani…"
-        />
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-2 px-4 overflow-x-auto pb-1 mb-4">
-        <button className="flex-shrink-0 w-9 h-9 rounded-full bg-[#24221D] flex items-center justify-center">
-          <SlidersIcon size={16} className="text-[#FFC928]" />
+      {/* Search Input Bar */}
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search 'Biriyani', 'Bakery', 'Late Night'..."
+            className="w-full bg-white border border-[#F5E9C8] text-[#24221D] font-body text-sm rounded-2xl pl-11 pr-4 py-3 shadow-sm focus:border-[#FFC928] outline-none"
+          />
+          <SearchIcon size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8B8578]" />
+          {query && (
+            <button onClick={() => setQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8B8578]">
+              <XIcon size={16} />
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => setShowFilterModal(true)}
+          className={`p-3 rounded-2xl border flex items-center gap-2 font-display font-bold text-sm transition-colors ${
+            activeFilters.length > 0 ? "bg-[#24221D] text-[#FFC928] border-[#24221D]" : "bg-white text-[#24221D] border-[#F5E9C8]"
+          }`}
+        >
+          <SlidersIcon size={18} />
+          <span className="hidden sm:inline">Filters</span>
+          {activeFilters.length > 0 && (
+            <span className="bg-[#FFC928] text-[#24221D] text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">
+              {activeFilters.length}
+            </span>
+          )}
         </button>
+      </div>
+
+      {/* Filter Quick Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-none mb-6">
         {allFilters.map((f) => (
           <FilterPill
             key={f}
@@ -156,151 +180,61 @@ export default function ExploreScreen({ onRestaurantClick }: Props) {
         ))}
       </div>
 
-      {/* Active filter chips */}
-      {activeFilters.length > 0 && (
-        <div className="flex items-center gap-2 px-4 mb-4 overflow-x-auto">
-          <span className="text-xs text-[#8B8578] font-body flex-shrink-0">Filtered:</span>
-          {activeFilters.map((f) => (
-            <button
-              key={f}
-              onClick={() => toggleFilter(f)}
-              className="flex-shrink-0 flex items-center gap-1 bg-[#FFC928] text-[#24221D] text-xs font-display font-700 px-3 py-1 rounded-full"
-            >
-              {f} <XIcon size={12} />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="flex gap-1 mx-4 mb-4 bg-[#F5E9C8] p-1 rounded-full">
-        {(["food", "restaurants"] as const).map((tab) => (
+      {/* View Switcher Tabs */}
+      <div className="flex border-b border-[#F5E9C8] mb-6">
+        {[
+          { id: "all", label: "All Results" },
+          { id: "dishes", label: "Dishes & Craves" },
+          { id: "restaurants", label: "Restaurants & Spots" },
+        ].map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 rounded-full text-sm font-display font-700 capitalize transition-all ${activeTab === tab ? "bg-[#24221D] text-[#FFC928] shadow-sm" : "text-[#8B8578]"}`}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-5 py-2.5 font-display font-bold text-sm border-b-2 transition-all ${
+              activeTab === tab.id
+                ? "border-[#FFC928] text-[#24221D]"
+                : "border-transparent text-[#8B8578] hover:text-[#24221D]"
+            }`}
           >
-            {tab === "food"
-              ? `🍽 Food (${filteredFood.length})`
-              : `🏪 Restaurants (${filteredRestaurants.length})`}
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Results */}
-      {activeTab === "food" ? (
-        <div>
-          {query && (
-            <div className="px-4 mb-3">
-              <p className="text-[#8B8578] text-sm font-body">
-                Showing results for <span className="font-600 text-[#24221D]">"{query}"</span>
-              </p>
-            </div>
-          )}
-          {filteredFood.length === 0 ? (
-            <EmptyState query={query} />
-          ) : (
-            <div className="grid grid-cols-2 gap-3 px-4">
-              {filteredFood.map((item, i) => (
+      {/* Desktop Main Content Layout */}
+      <div className="space-y-8">
+        {/* Dishes Section */}
+        {(activeTab === "all" || activeTab === "dishes") && (
+          <div>
+            <h2 className="font-display font-black text-[#24221D] text-lg mb-4">
+              Popular Dishes Nearby
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {foodResults.map((item, idx) => (
                 <FoodCard
-                  key={i}
-                  name={item.name}
-                  restaurant={item.restaurant}
-                  price={item.price}
-                  rating={item.rating}
-                  distance={item.distance}
-                  image={item.image}
-                  isVeg={item.isVeg}
-                  isSpicy={item.isSpicy}
+                  key={idx}
+                  {...item}
                   onClick={() => onRestaurantClick(item.restaurantId)}
                 />
               ))}
             </div>
-          )}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3 px-4">
-          {filteredRestaurants.length === 0 ? (
-            <EmptyState query={query} />
-          ) : (
-            filteredRestaurants.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => onRestaurantClick(r.id)}
-                className="flex items-center gap-3 bg-white rounded-[16px] p-3 text-left active:scale-[0.98] transition-transform"
-                style={{ boxShadow: "0 2px 8px rgba(36,34,29,0.06)" }}
-              >
-                <div className="w-16 h-16 rounded-[12px] overflow-hidden bg-[#F5E9C8] flex-shrink-0">
-                  <img src={r.coverImage} alt={r.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-display font-700 text-[#24221D] text-sm">{r.name}</p>
-                    <RatingBadge rating={r.rating} />
-                  </div>
-                  <p className="text-[#8B8578] text-xs font-body mt-0.5 line-clamp-1">
-                    {r.cuisine}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-[10px] font-bold ${r.isOpen ? "text-green-600" : "text-red-400"}`}
-                    >
-                      {r.isOpen ? "● Open" : "● Closed"}
-                    </span>
-                    <span className="text-[#8B8578] text-[10px]">
-                      {r.distance} · {r.priceRange}
-                    </span>
-                    {r.isHiddenGem && (
-                      <span className="bg-[#FFC928] text-[#24221D] text-[9px] font-display font-800 px-1.5 py-0.5 rounded-full">
-                        ✦ GEM
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <ChevronRightIcon size={16} className="text-[#C4BDB3] flex-shrink-0" />
-              </button>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* Category Browse (when no query) */}
-      {!query && (
-        <div className="mt-8 px-4">
-          <h3 className="font-display font-800 text-[#24221D] text-base mb-3">
-            Browse by category
-          </h3>
-          <div className="grid grid-cols-3 gap-3">
-            {foodCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setQuery(cat.label)}
-                className="bg-white rounded-[16px] p-3 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
-                style={{ boxShadow: "0 2px 8px rgba(36,34,29,0.06)" }}
-              >
-                <span className="text-2xl">{cat.emoji}</span>
-                <span className="text-xs font-body text-[#24221D] font-500 text-center leading-tight">
-                  {cat.label}
-                </span>
-              </button>
-            ))}
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
+        )}
 
-function EmptyState({ query }: { query: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 px-4">
-      <span className="text-5xl mb-4">🔍</span>
-      <p className="font-display font-800 text-[#24221D] text-lg text-center">
-        No results for "{query}"
-      </p>
-      <p className="text-[#8B8578] text-sm font-body mt-2 text-center">
-        Try searching for chicken, biriyani, shawarma…
-      </p>
+        {/* Restaurants Section */}
+        {(activeTab === "all" || activeTab === "restaurants") && (
+          <div>
+            <h2 className="font-display font-black text-[#24221D] text-lg mb-4">
+              Top Rated Restaurants ({filteredRestaurants.length})
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredRestaurants.map((r) => (
+                <RestaurantCard key={r.id} restaurant={r} onClick={() => onRestaurantClick(r.id)} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

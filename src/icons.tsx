@@ -369,3 +369,35 @@ export const SlidersIcon = ({ size = 18, className = "", strokeWidth = 2 }: Icon
     />
   </svg>
 );
+
+export const SparklesIcon = ({ size = 24, className = "", strokeWidth = 2 }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <path
+      d="M12 3C12 3 13.5 7.5 18 9C13.5 10.5 12 15 12 15C12 15 10.5 10.5 6 9C10.5 7.5 12 3 12 3Z"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19 15C19 15 19.75 17.25 22 18C19.75 18.75 19 21 19 21C19 21 18.25 18.75 16 18C18.25 17.25 19 15 19 15Z"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const FilterIcon = ({ size = 24, className = "", strokeWidth = 2 }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <polygon
+      points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
