@@ -7,7 +7,7 @@ import {
   SectionHeader,
   SearchBar,
 } from "./components";
-import { restaurants, foodCategories, getTimeGreeting, getTimeRecommendations } from "./data";
+import { foodCategories, getTimeGreeting, getTimeRecommendations, type Restaurant } from "./data";
 
 const IMG = {
   biryani:
@@ -25,6 +25,7 @@ const IMG = {
 };
 
 interface Props {
+  restaurants: Restaurant[];
   onRestaurantClick: (id: string) => void;
   onExploreClick: () => void;
   onHiddenGemsClick: () => void;
@@ -94,6 +95,7 @@ const cravingItems = [
 ];
 
 export default function HomeScreen({
+  restaurants,
   onRestaurantClick,
   onExploreClick,
   onHiddenGemsClick,

@@ -10,14 +10,15 @@ import {
   FlameIcon,
 } from "./icons";
 import { MenuItemCard, RatingBadge, FoodCard } from "./components";
-import { restaurants } from "./data";
+import type { Restaurant } from "./data";
 
 interface Props {
+  restaurants: Restaurant[];
   restaurantId: string;
   onBack: () => void;
 }
 
-export default function RestaurantScreen({ restaurantId, onBack }: Props) {
+export default function RestaurantScreen({ restaurants, restaurantId, onBack }: Props) {
   const restaurant = restaurants.find((r) => r.id === restaurantId) ?? restaurants[0];
   const [activeCategory, setActiveCategory] = useState(restaurant.menu[0]?.id ?? "");
   const [saved, setSaved] = useState(false);
@@ -99,28 +100,34 @@ export default function RestaurantScreen({ restaurantId, onBack }: Props) {
           <span className="text-[#8B8578]">· {restaurant.distance}</span>
         </p>
         <div className="flex gap-2">
-          {[
-            { icon: <NavigationIcon size={15} className="text-[#24221D]" />, label: "Directions" },
-            { icon: <PhoneIcon size={15} className="text-[#24221D]" />, label: "Call" },
-            {
-              icon: (
-                <BookmarkIcon size={15} className={saved ? "text-[#FFC928]" : "text-[#24221D]"} />
-              ),
-              label: saved ? "Saved" : "Save",
-            },
-          ].map(({ icon, label }) => (
-            <button
-              key={label}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-[#FFF9ED] text-[#24221D] text-xs font-display font-700 active:bg-[#F5E9C8] transition-colors"
-            >
-              {icon} {label}
-            </button>
-          ))}
+          {restaurant.locationUrl ? (
+            <a href={restaurant.locationUrl} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-[#FFF9ED] text-[#24221D] text-xs font-display font-700 active:bg-[#F5E9C8] transition-colors">
+              <NavigationIcon size={15} className="text-[#24221D]" /> Directions
+            </a>
+          ) : (
+            <span className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-[#FFF9ED] text-[#8B8578] text-xs font-display font-700">
+              <NavigationIcon size={15} /> Directions unavailable
+            </span>
+          )}
+          {restaurant.phone ? (
+            <a href={`tel:${restaurant.phone.replace(/[^+\d]/g, "")}`} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-[#FFF9ED] text-[#24221D] text-xs font-display font-700 active:bg-[#F5E9C8] transition-colors">
+              <PhoneIcon size={15} className="text-[#24221D]" /> Call
+            </a>
+          ) : null}
+          <button onClick={() => setSaved(!saved)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-[#FFF9ED] text-[#24221D] text-xs font-display font-700 active:bg-[#F5E9C8] transition-colors">
+            <BookmarkIcon size={15} className={saved ? "text-[#FFC928]" : "text-[#24221D]"} />
+            {saved ? "Saved" : "Save"}
+          </button>
         </div>
       </div>
 
       {/* Tags */}
       <div className="flex gap-2 px-4 py-3 overflow-x-auto bg-white border-b border-[#F5E9C8]">
+        {restaurant.menuAvailable && (
+          <span className="flex-shrink-0 text-xs font-body px-3 py-1 rounded-full bg-[#EAF8ED] text-green-700 font-700">
+            Menu available
+          </span>
+        )}
         {restaurant.tags.map((tag) => (
           <span
             key={tag}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HomeIcon, CompassIcon, PlusIcon, BookmarkIcon, UserIcon } from "./icons";
 import { Sidebar, NavTab } from "./Sidebar";
 import { Header } from "./Header";
@@ -9,6 +9,8 @@ import ProfileScreen from "./ProfileScreen";
 import RestaurantScreen from "./RestaurantScreen";
 import CreatePostScreen from "./CreatePostScreen";
 import SavedScreen from "./SavedScreen";
+import { restaurants as fallbackRestaurants, type Restaurant } from "./data";
+import { fetchRestaurants } from "./services/api";
 
 type Screen =
   | "home"
@@ -24,6 +26,15 @@ export default function App() {
   const [prevScreen, setPrevScreen] = useState<Screen>("home");
   const [activeTab, setActiveTab] = useState<NavTab>("home");
   const [restaurantId, setRestaurantId] = useState<string>("azad");
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(fallbackRestaurants);
+
+  useEffect(() => {
+    fetchRestaurants()
+      .then((databaseRestaurants) => {
+        if (databaseRestaurants.length > 0) setRestaurants(databaseRestaurants);
+      })
+      .catch((error) => console.warn("Unable to load restaurants from Supabase:", error));
+  }, []);
 
   const navigate = (s: Screen) => {
     setPrevScreen(screen);
@@ -67,12 +78,13 @@ export default function App() {
           <div className="max-w-7xl mx-auto w-full">
             {screen === "home" && (
               <HomeScreen
+                restaurants={restaurants}
                 onRestaurantClick={openRestaurant}
                 onExploreClick={() => navTo("explore")}
                 onHiddenGemsClick={() => navTo("explore")}
               />
             )}
-            {screen === "explore" && <ExploreScreen onRestaurantClick={openRestaurant} />}
+            {screen === "explore" && <ExploreScreen restaurants={restaurants} onRestaurantClick={openRestaurant} />}
             {screen === "feed" && (
               <FeedScreen
                 onRestaurantClick={openRestaurant}
@@ -82,7 +94,7 @@ export default function App() {
             {screen === "saved" && <SavedScreen onRestaurantClick={openRestaurant} />}
             {screen === "profile" && <ProfileScreen />}
             {screen === "restaurant" && (
-              <RestaurantScreen restaurantId={restaurantId} onBack={goBack} />
+              <RestaurantScreen restaurants={restaurants} restaurantId={restaurantId} onBack={goBack} />
             )}
             {screen === "create-post" && (
               <CreatePostScreen onBack={goBack} onSuccess={() => navTo("feed")} />

@@ -36,6 +36,8 @@ export interface Restaurant {
   isHiddenGem: boolean;
   gemDescription?: string;
   phone: string;
+  locationUrl?: string;
+  menuAvailable?: boolean;
   menu: MenuCategory[];
 }
 

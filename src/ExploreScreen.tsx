@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SlidersIcon, XIcon, ChevronRightIcon, SearchIcon, MapPinIcon } from "./icons";
 import { SearchBar, FilterPill, FoodCard, RestaurantCard, RatingBadge } from "./components";
-import { restaurants, foodCategories } from "./data";
+import type { Restaurant } from "./data";
 
 const IMG = {
   biryani:
@@ -99,10 +99,11 @@ const foodResults = [
 ];
 
 interface Props {
+  restaurants: Restaurant[];
   onRestaurantClick: (id: string) => void;
 }
 
-export default function ExploreScreen({ onRestaurantClick }: Props) {
+export default function ExploreScreen({ restaurants, onRestaurantClick }: Props) {
   const [query, setQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
