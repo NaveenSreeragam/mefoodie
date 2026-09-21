@@ -21,7 +21,14 @@ type Screen =
   | "restaurant"
   | "create-post";
 
-export type UserType = { phone?: string; email?: string; name?: string } | null;
+export type UserType = {
+  phone?: string;
+  email?: string;
+  name?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+} | null;
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -45,7 +52,10 @@ export default function App() {
           setUser({
             phone: session.user.phone || undefined,
             email: session.user.email || undefined,
-            name: session.user.user_metadata?.full_name || undefined,
+            name: session.user.user_metadata?.full_name || "Foodie Explorer",
+            bio: session.user.user_metadata?.bio || "Passionate about finding hidden street food spots!",
+            location: session.user.user_metadata?.location || "Hyderabad, IN",
+            avatarUrl: session.user.user_metadata?.avatar_url || undefined,
           });
         }
       });
@@ -55,7 +65,10 @@ export default function App() {
           setUser({
             phone: session.user.phone || undefined,
             email: session.user.email || undefined,
-            name: session.user.user_metadata?.full_name || undefined,
+            name: session.user.user_metadata?.full_name || "Foodie Explorer",
+            bio: session.user.user_metadata?.bio || "Passionate about finding hidden street food spots!",
+            location: session.user.user_metadata?.location || "Hyderabad, IN",
+            avatarUrl: session.user.user_metadata?.avatar_url || undefined,
           });
         } else {
           setUser(null);
@@ -137,6 +150,7 @@ export default function App() {
               <ProfileScreen
                 user={user}
                 onLoginClick={() => setIsAuthOpen(true)}
+                onUpdateUser={(updated) => setUser((prev) => (prev ? { ...prev, ...updated } : updated))}
                 onLogout={() => {
                   if (supabase) supabase.auth.signOut();
                   setUser(null);
