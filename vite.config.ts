@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json'
+const siteConfiguration = {
+  title: "MeFoodie - Satisfy Every Craving",
+  description: "Discover hidden food gems, community reviews, and top restaurants near you.",
+}
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

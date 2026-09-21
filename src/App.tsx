@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import FeedScreen from "./FeedScreen";
+import SavedScreen from "./SavedScreen";
 import { HomeIcon, CompassIcon, PlusIcon, BookmarkIcon, UserIcon } from "./icons";
 import { Sidebar, NavTab } from "./Sidebar";
 import { Header } from "./Header";
@@ -141,10 +143,13 @@ export default function App() {
             )}
             {screen === "explore" && <ExploreScreen restaurants={restaurants} onRestaurantClick={openRestaurant} />}
             {screen === "feed" && (
-              <EmptyState title="Discoveries" message="No community posts have been added yet." />
+              <FeedScreen
+                onRestaurantClick={openRestaurant}
+                onCreatePost={handleCreatePost}
+              />
             )}
             {screen === "saved" && (
-              <EmptyState title="Saved" message="No restaurants have been saved yet." />
+              <SavedScreen onRestaurantClick={openRestaurant} />
             )}
             {screen === "profile" && (
               <ProfileScreen
@@ -229,14 +234,7 @@ export default function App() {
   );
 }
 
-function EmptyState({ title, message }: { title: string; message: string }) {
-  return (
-    <div className="px-4 py-16 text-center">
-      <h1 className="font-display font-900 text-[#24221D] text-2xl">{title}</h1>
-      <p className="text-[#8B8578] text-sm mt-2">{message}</p>
-    </div>
-  );
-}
+
 
 function NavButton({
   icon,
