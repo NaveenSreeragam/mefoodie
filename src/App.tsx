@@ -9,6 +9,8 @@ import RestaurantScreen from "./RestaurantScreen";
 import CreatePostScreen from "./CreatePostScreen";
 import { type Restaurant } from "./data";
 import { fetchRestaurants } from "./services/api";
+import { AuthModal } from "./AuthModal";
+import { supabase } from "./lib/supabase";
 
 type Screen =
   | "home"
@@ -19,12 +21,16 @@ type Screen =
   | "restaurant"
   | "create-post";
 
+export type UserType = { phone?: string; email?: string; name?: string } | null;
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [prevScreen, setPrevScreen] = useState<Screen>("home");
   const [activeTab, setActiveTab] = useState<NavTab>("home");
   const [restaurantId, setRestaurantId] = useState<string>("azad");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [user, setUser] = useState<UserType>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
     fetchRestaurants()
@@ -32,6 +38,34 @@ export default function App() {
         if (databaseRestaurants.length > 0) setRestaurants(databaseRestaurants);
       })
       .catch((error) => console.warn("Unable to load restaurants from Supabase:", error));
+
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          setUser({
+            phone: session.user.phone || undefined,
+            email: session.user.email || undefined,
+            name: session.user.user_metadata?.full_name || undefined,
+          });
+        }
+      });
+
+      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          setUser({
+            phone: session.user.phone || undefined,
+            email: session.user.email || undefined,
+            name: session.user.user_metadata?.full_name || undefined,
+          });
+        } else {
+          setUser(null);
+        }
+      });
+
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }
   }, []);
 
   const navigate = (s: Screen) => {
@@ -54,13 +88,21 @@ export default function App() {
     setPrevScreen("home");
   };
 
+  const handleCreatePost = () => {
+    if (!user) {
+      setIsAuthOpen(true);
+    } else {
+      navigate("create-post");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#E8DEC8] flex flex-col md:flex-row font-body text-[#24221D]">
       {/* Desktop Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
         onNavigate={(tab) => navTo(tab)}
-        onCreatePost={() => navigate("create-post")}
+        onCreatePost={handleCreatePost}
       />
 
       {/* Main Content Area */}
@@ -69,6 +111,8 @@ export default function App() {
         <Header
           onExploreClick={() => navTo("explore")}
           onSearch={(q) => navTo("explore")}
+          user={user}
+          onOpenAuth={() => setIsAuthOpen(true)}
         />
 
         {/* Screen Scroll Container */}
@@ -89,7 +133,16 @@ export default function App() {
             {screen === "saved" && (
               <EmptyState title="Saved" message="No restaurants have been saved yet." />
             )}
-            {screen === "profile" && <ProfileScreen />}
+            {screen === "profile" && (
+              <ProfileScreen
+                user={user}
+                onLoginClick={() => setIsAuthOpen(true)}
+                onLogout={() => {
+                  if (supabase) supabase.auth.signOut();
+                  setUser(null);
+                }}
+              />
+            )}
             {screen === "restaurant" && (
               <RestaurantScreen restaurants={restaurants} restaurantId={restaurantId} onBack={goBack} />
             )}
@@ -98,6 +151,16 @@ export default function App() {
             )}
           </div>
         </main>
+
+        {/* Auth Modal Component */}
+        <AuthModal
+          isOpen={isAuthOpen}
+          onClose={() => setIsAuthOpen(false)}
+          onAuthSuccess={(u) => {
+            setUser(u);
+            setIsAuthOpen(false);
+          }}
+        />
 
         {/* Mobile Floating Bottom Navigation */}
         {screen !== "restaurant" && screen !== "create-post" && (

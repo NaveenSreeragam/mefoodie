@@ -4,9 +4,11 @@ import { SearchIcon, MapPinIcon, BellIcon, FilterIcon } from "./icons";
 interface HeaderProps {
   onSearch?: (query: string) => void;
   onExploreClick?: () => void;
+  user?: { phone?: string; email?: string; name?: string } | null;
+  onOpenAuth?: () => void;
 }
 
-export function Header({ onSearch, onExploreClick }: HeaderProps) {
+export function Header({ onSearch, onExploreClick, user, onOpenAuth }: HeaderProps) {
   const [location, setLocation] = useState("Jubilee Hills, Hyderabad");
   const [searchVal, setSearchVal] = useState("");
 
@@ -58,6 +60,25 @@ export function Header({ onSearch, onExploreClick }: HeaderProps) {
           <BellIcon size={18} />
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FF5733]" />
         </button>
+
+        {/* Sign In / User pill */}
+        {user ? (
+          <div className="flex items-center gap-2 bg-[#FFF9ED] border border-[#F5E9C8] px-3 py-1.5 rounded-2xl">
+            <div className="w-6 h-6 rounded-full bg-[#FFC928] text-[#24221D] font-display font-black text-xs flex items-center justify-center">
+              {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <span className="text-xs font-display font-bold text-[#24221D] max-w-[100px] truncate">
+              {user.name || user.phone}
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={onOpenAuth}
+            className="bg-[#FFC928] hover:bg-[#e6b420] text-[#24221D] font-display font-bold text-xs px-4 py-2.5 rounded-2xl shadow-xs transition-all active:scale-[0.98]"
+          >
+            Sign In
+          </button>
+        )}
       </div>
     </header>
   );
